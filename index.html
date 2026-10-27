@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Arah Tanpa Peta — aka &amp; awa</title>
+<meta name="description" content="Sebuah novel interaktif tentang dua orang yang jalan tanpa peta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="is-loading">
+
+<!-- filter "boil": bikin garis vektor goyang halus kayak animasi tangan -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="boil" x="-12%" y="-12%" width="124%" height="124%">
+    <feTurbulence id="boilTurb" type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="2" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<!-- ============ TEKSTUR GLOBAL ============ -->
+<div id="grain" aria-hidden="true"></div>
+<div id="vignette" aria-hidden="true"></div>
+<canvas id="petals" aria-hidden="true"></canvas>
+<div id="cursor" aria-hidden="true"><span></span></div>
+
+<!-- ============ PRELOADER ============ -->
+<div id="preloader">
+  <div class="pl-box">
+    <div class="pl-tag">ARSIP PRIBADI — JANGAN DIBACA ORANG LAIN</div>
+    <h1 class="pl-title">ARAH<br><em>TANPA</em><br>PETA</h1>
+    <div class="pl-meta">
+      <span>aka</span>
+      <span class="pl-x">&times;</span>
+      <span>awa</span>
+    </div>
+    <div class="pl-barwrap"><div class="pl-bar" id="plBar"></div></div>
+    <div class="pl-status" id="plStatus">MENYUSUN HALAMAN…</div>
+    <button id="startBtn" class="btn-brut btn-start" hidden>BUKA ARSIPNYA</button>
+    <div class="pl-note">headset on, volumenya pelan aja.</div>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<header id="hud" hidden>
+  <div class="hud-left">
+    <button class="hud-logo" id="homeBtn" title="Kembali ke sampul">A&amp;S</button>
+    <div class="hud-title">ARAH TANPA PETA</div>
+  </div>
+  <div class="hud-right">
+    <div class="hud-chapter"><span id="chapNum">00</span><i>/</i>08</div>
+    <button class="hud-btn" id="musicBtn" title="Musik (M)"><span class="vinyl"></span><b id="musicLabel">LAGU</b></button>
+    <button class="hud-btn" id="helpBtn" title="Bantuan (H)">?</button>
+  </div>
+  <div class="hud-progress"><div id="hudBar"></div></div>
+</header>
+
+<!-- ============ NAVIGASI BAB ============ -->
+<nav id="rail" hidden aria-label="Daftar bab"></nav>
+
+<!-- ============ PANGGUNG ============ -->
+<main id="stage" hidden>
+  <div class="book-float">
+  <div id="book" class="book state-closed">
+
+    <!-- sampul depan -->
+    <div class="cover" id="cover">
+      <div class="cover-face cover-front">
+        <div class="cover-inner">
+          <div class="cover-rule"></div>
+          <div class="cover-kicker">SEBUAH NOVEL YANG BELUM SELESAI</div>
+          <h2 class="cover-title">ARAH<br>TANPA<br>PETA</h2>
+          <div class="cover-sub">dua orang, nol peta, satu arah.</div>
+          <div class="cover-carve">
+            <svg viewBox="0 0 220 110" class="carve-svg" aria-hidden="true">
+              <path class="carve-path" d="M18 86 C 18 40, 56 18, 62 58 C 66 86, 40 92, 38 60 C 36 28, 74 22, 92 86" />
+              <path class="carve-path" d="M112 86 C 112 40, 150 18, 156 58 C 160 86, 134 92, 132 60 C 130 28, 168 22, 186 86" />
+              <path class="carve-path carve-amp" d="M96 74 c 8 -14, 2 -22, -4 -18 c -6 4, 2 16, 10 20 c 6 3, 8 -2, 4 -6" />
+            </svg>
+            <span class="carve-caption">terukir, bukan ditempel.</span>
+          </div>
+          <div class="cover-foot">
+            <span>puisi oleh <b>cawaaa</b></span>
+            <span class="dot"></span>
+            <span>disusun oleh <b>aka</b></span>
+          </div>
+        </div>
+        <!-- sulur &amp; bunga yang nutupin buku -->
+        <svg class="vines" id="vines" viewBox="0 0 600 820" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+        <div class="cover-hint" id="coverHint">
+          <b>SULURNYA BISA DISIBAK</b>
+          <small id="hintSmall">klik atau gesek sulurnya — atau langsung buka bukunya</small>
+          <button class="btn-mini" id="openNow">BUKA BUKUNYA</button>
+        </div>
+      </div>
+      <div class="cover-face cover-back">
+        <div class="cover-back-inner">
+          <p class="cb-quote">“Tak semua kebersamaan perlu diisi suara.”</p>
+          <p class="cb-by">— cawaaa, <i>Barisan Kata yang Tak Ku Mengerti</i></p>
+          <div class="cb-stamp">EDISI 01<br>CETAKAN PERTAMA</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- isi buku -->
+    <div class="pagesWrap">
+      <div class="page page-left" id="pageL"></div>
+      <div class="gutter" aria-hidden="true"></div>
+      <div class="page page-right" id="pageR"></div>
+      <div class="flipper" id="flipper" aria-hidden="true">
+        <div class="flip-face flip-front"></div>
+        <div class="flip-face flip-back"></div>
+      </div>
+    </div>
+
+    <div class="book-edge" aria-hidden="true"></div>
+    <div class="book-shadow" aria-hidden="true"></div>
+  </div>
+  </div>
+
+  <!-- kontrol halaman -->
+  <div id="pageNav" hidden>
+    <button class="btn-brut nav-prev" id="prevBtn">&larr;<span>SEBELUM</span></button>
+    <div class="nav-dots" id="navDots"></div>
+    <button class="btn-brut nav-next" id="nextBtn"><span>LANJUT</span>&rarr;</button>
+  </div>
+</main>
+
+<!-- ============ LIGHTBOX ============ -->
+<div id="lightbox" hidden>
+  <button class="lb-close" id="lbClose">&times;</button>
+  <figure class="lb-frame">
+    <div class="lb-media" id="lbMedia"></div>
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+</div>
+
+<!-- ============ BANTUAN ============ -->
+<div id="help" hidden>
+  <div class="help-card">
+    <h3>CARA BACA</h3>
+    <ul>
+      <li><b>KLIK / SPASI</b> — lanjutin dialog, sekali lagi buat skip ketikan</li>
+      <li><b>&larr; &rarr;</b> — pindah bab (baru kebuka kalau obrolan bab ini udah kelar)</li>
+      <li><b>GESER</b> — swipe kiri/kanan buat pindah halaman</li>
+      <li><b>M</b> — matiin/nyalain lagu &nbsp;·&nbsp; <b>S</b> — bunyi ketikan &nbsp;·&nbsp; <b>H</b> — bantuan</li>
+      <li><b>ESC</b> — tutup pop-up</li>
+    </ul>
+    <p class="help-note">Semua puisi di sini karya <b>cawaaa</b>. Sisanya cuma cara aka menyimpannya.</p>
+    <button class="btn-brut" id="helpClose">MULAI BACA</button>
+  </div>
+</div>
+
+<div id="wipe" aria-hidden="true"><b></b><span></span></div>
+
+<audio id="bgm" loop preload="auto" src="lagu/Conan%20Gray%20-%20Memories%20(Lyrics).mp3"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>
